@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class HelpRequests {
+public class HelpRequest {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
