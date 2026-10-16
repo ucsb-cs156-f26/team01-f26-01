@@ -27,20 +27,20 @@ public class HelpRequestControllerTests extends ControllerTestCase {
   @Test
   public void logged_out_users_cannot_get_all() throws Exception {
     mockMvc
-        .perform(get("/api/ucsbdates/all"))
+        .perform(get("/api/HelpRequest/all"))
         .andExpect(status().is(403)); // logged out users can't get all
   }
 
   @WithMockUser(roles = {"USER"})
   @Test
   public void logged_in_users_can_get_all() throws Exception {
-    mockMvc.perform(get("/api/ucsbdates/all")).andExpect(status().is(200)); // logged
+    mockMvc.perform(get("/api/HelpRequest/all")).andExpect(status().is(200)); // logged
   }
 
   @Test
   public void logged_out_users_cannot_get_by_id() throws Exception {
     mockMvc
-        .perform(get("/api/ucsbdates").param("id", "7"))
+        .perform(get("/api/HelpRequest").param("id", "7"))
         .andExpect(status().is(403)); // logged out users can't get by id
   }
 
@@ -51,10 +51,14 @@ public class HelpRequestControllerTests extends ControllerTestCase {
   public void logged_out_users_cannot_post() throws Exception {
     mockMvc
         .perform(
-            post("/api/ucsbdates/post")
-                .param("name", "firstDayOfClasses")
-                .param("quarterYYYYQ", "20222")
-                .param("localDateTime", "2022-01-03T00:00:00")
+            post("/api/HelpRequest/post")
+                .param("requesterEmail", "test@mail.com")
+                .param("teamId", "20222")
+                .param("tableOrBreakoutRoom", "table")
+                .param("explanation", "solution")
+                .param("name", "Student")
+                .param("solved", "false")
+                .param("requestTime", "2026-01-03T00:00:00")
                 .with(csrf()))
         .andExpect(status().is(403));
   }
@@ -64,10 +68,14 @@ public class HelpRequestControllerTests extends ControllerTestCase {
   public void logged_in_regular_users_cannot_post() throws Exception {
     mockMvc
         .perform(
-            post("/api/ucsbdates/post")
-                .param("name", "firstDayOfClasses")
-                .param("quarterYYYYQ", "20222")
-                .param("localDateTime", "2022-01-03T00:00:00")
+            post("/api/HelpRequest/post")
+                .param("requesterEmail", "test@mail.com")
+                .param("teamId", "20222")
+                .param("tableOrBreakoutRoom", "table")
+                .param("explanation", "solution")
+                .param("name", "Student")
+                .param("solved", "false")
+                .param("requestTime", "2026-01-03T00:00:00")
                 .with(csrf()))
         .andExpect(status().is(403)); // only admins can post
   }

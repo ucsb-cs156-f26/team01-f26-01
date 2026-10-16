@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "HelpRequest")
-@RequestMapping("/api/helprequest")
+@RequestMapping("/api/HelpRequest")
 @RestController
 @Slf4j
 public class HelpRequestController {
@@ -39,7 +39,7 @@ public class HelpRequestController {
   @PostMapping("/post")
   public HelpRequest postHelpRequest(
       @Parameter(name = "requesterEmail") @RequestParam String requesterEmail,
-      @Parameter(name = "reamId") @RequestParam String teamId,
+      @Parameter(name = "teamId") @RequestParam String teamId,
       @Parameter(name = "tableOrBreakoutRoom") @RequestBody String tableOrBreakoutRoom,
       @Parameter(name = "explanation") @RequestBody String explanation,
       @Parameter(name = "name") @RequestParam String name,
