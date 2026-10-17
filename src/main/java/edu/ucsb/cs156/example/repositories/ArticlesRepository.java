@@ -1,6 +1,6 @@
 package edu.ucsb.cs156.example.repositories;
 
-import edu.ucsb.cs156.example.entities.Articles;
+import edu.ucsb.cs156.example.entities.Article;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 // extends CrudRepository<Article, long>
 // Article <-- type that will be stored
 // long    <-- indexing (@id) type
-public interface ArticlesRepository extends CrudRepository<Articles, Long> {}
+public interface ArticlesRepository extends CrudRepository<Article, Long> {}
 
 // This is an interface
 // SpringBoot auto generates the code for the implementing class automatically

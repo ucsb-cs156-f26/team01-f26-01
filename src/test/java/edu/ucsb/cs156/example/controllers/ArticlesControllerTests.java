@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import edu.ucsb.cs156.example.ControllerTestCase;
-import edu.ucsb.cs156.example.entities.Articles;
+import edu.ucsb.cs156.example.entities.Article;
 import edu.ucsb.cs156.example.repositories.ArticlesRepository;
 import edu.ucsb.cs156.example.repositories.UserRepository;
 import edu.ucsb.cs156.example.testconfig.TestConfig;
@@ -52,8 +52,8 @@ public class ArticlesControllerTests extends ControllerTestCase {
     // arrange
     LocalDateTime ldt1 = LocalDateTime.parse("2026-09-29T02:00:00");
 
-    Articles article1 =
-        Articles.builder()
+    Article article1 =
+        Article.builder()
             .title("City Never Sleeps")
             .url("https://www.playdeadlock.com/cityneversleeps")
             .explanation("The biggest update the game's map has ever seen! And more!")
@@ -63,8 +63,8 @@ public class ArticlesControllerTests extends ControllerTestCase {
 
     LocalDateTime ldt2 = LocalDateTime.parse("2026-10-13T02:03:00");
 
-    Articles article2 =
-        Articles.builder()
+    Article article2 =
+        Article.builder()
             .title("Deadman Danny latest hero added to Valve's deadlock")
             .url("https://store.steampowered.com/news/app/1422450/view/703281660030880788")
             .explanation("The latest and greatest hero from Valve")
@@ -72,7 +72,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
             .dateAdded(ldt2)
             .build();
 
-    ArrayList<Articles> expectedArticles = new ArrayList<>();
+    ArrayList<Article> expectedArticles = new ArrayList<>();
     expectedArticles.addAll(Arrays.asList(article1, article2));
 
     when(articlesRepository.findAll()).thenReturn(expectedArticles);
@@ -129,8 +129,8 @@ public class ArticlesControllerTests extends ControllerTestCase {
     String localTimeOfArticle = "2026-09-29T02:00:00";
     LocalDateTime ldt1 = LocalDateTime.parse(localTimeOfArticle);
 
-    Articles article1 =
-        Articles.builder()
+    Article article1 =
+        Article.builder()
             .title("City Never Sleeps")
             .url("https://www.playdeadlock.com/cityneversleeps")
             .explanation("The biggest update the game's map has ever seen! And more!")

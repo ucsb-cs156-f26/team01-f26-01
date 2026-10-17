@@ -1,7 +1,8 @@
 package edu.ucsb.cs156.example.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import edu.ucsb.cs156.example.entities.Articles;
+import edu.ucsb.cs156.example.entities.Article;
+import edu.ucsb.cs156.example.errors.EntityNotFoundException;
 import edu.ucsb.cs156.example.repositories.ArticlesRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,15 +40,33 @@ public class ArticlesController {
   @Operation(summary = "List all articles")
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("/all")
-  public Iterable<Articles> allArticles() {
-    Iterable<Articles> articles = articlesRepository.findAll();
+  public Iterable<Article> allArticles() {
+    Iterable<Article> articles = articlesRepository.findAll();
     return articles;
+  }
+
+  /**
+   * Get a single date by id
+   *
+   * @param id the id of the date
+   * @return a UCSBDate
+   */
+  @Operation(summary = "Get a single article")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  @GetMapping("")
+  public Article getById(@Parameter(name = "id") @RequestParam Long id) {
+    Article article =
+        articlesRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(Article.class, id));
+
+    return article;
   }
 
   @Operation(summary = "Create a new article")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PostMapping("/post")
-  public Articles postArticles(
+  public Article postArticles(
       @Parameter(name = "title") @RequestParam String title,
       @Parameter(name = "url") @RequestParam String url,
       @Parameter(name = "explanation") @RequestParam String explanation,
@@ -67,14 +86,14 @@ public class ArticlesController {
 
     log.info("localDateTime={}", localDateTime);
 
-    Articles articles = new Articles();
+    Article articles = new Article();
     articles.setTitle(title);
     articles.setUrl(url);
     articles.setExplanation(explanation);
     articles.setEmail(email);
     articles.setDateAdded(localDateTime); // might need updating?
 
-    Articles savedArticle = articlesRepository.save(articles);
+    Article savedArticle = articlesRepository.save(articles);
 
     return savedArticle;
   }
