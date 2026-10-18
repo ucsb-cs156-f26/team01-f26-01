@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 // extends CrudRepository<Article, long>
 // Article <-- type that will be stored
 // long    <-- indexing (@id) type
-public interface ArticlesRepository extends CrudRepository<Article, Long> {}
+public interface ArticleRepository extends CrudRepository<Article, Long> {}
 
 // This is an interface
 // SpringBoot auto generates the code for the implementing class automatically

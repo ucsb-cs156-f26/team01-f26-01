@@ -3,7 +3,7 @@ package edu.ucsb.cs156.example.controllers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.ucsb.cs156.example.entities.Article;
 import edu.ucsb.cs156.example.errors.EntityNotFoundException;
-import edu.ucsb.cs156.example.repositories.ArticlesRepository;
+import edu.ucsb.cs156.example.repositories.ArticleRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,30 +18,30 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Articles")
-@RequestMapping("/api/articles")
+@Tag(name = "Article")
+@RequestMapping("/api/article")
 @RestController
 @Slf4j
-public class ArticlesController {
+public class ArticleController extends ApiController {
   // Autowired
   // Springboot auto invoke the constructor
   // also auto-switch between localhost and production environment
-  @Autowired ArticlesRepository articlesRepository;
+  @Autowired ArticleRepository articleRepository;
 
   // copy over all with:
   // @GetMapping(/all)
   // @PostMapping(/post)
 
   /**
-   * List all articles
+   * List all article
    *
    * @return an iterable of Article
    */
-  @Operation(summary = "List all articles")
+  @Operation(summary = "List all article")
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("/all")
   public Iterable<Article> allArticles() {
-    Iterable<Article> articles = articlesRepository.findAll();
+    Iterable<Article> articles = articleRepository.findAll();
     return articles;
   }
 
@@ -49,14 +49,14 @@ public class ArticlesController {
    * Get a single date by id
    *
    * @param id the id of the date
-   * @return a UCSBDate
+   * @return an article
    */
-  @Operation(summary = "Get a single article")
+  @Operation(summary = "Get a single article by id")
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("")
   public Article getById(@Parameter(name = "id") @RequestParam Long id) {
     Article article =
-        articlesRepository
+        articleRepository
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException(Article.class, id));
 
@@ -86,14 +86,14 @@ public class ArticlesController {
 
     log.info("localDateTime={}", localDateTime);
 
-    Article articles = new Article();
-    articles.setTitle(title);
-    articles.setUrl(url);
-    articles.setExplanation(explanation);
-    articles.setEmail(email);
-    articles.setDateAdded(localDateTime); // might need updating?
+    Article article = new Article();
+    article.setTitle(title);
+    article.setUrl(url);
+    article.setExplanation(explanation);
+    article.setEmail(email);
+    article.setDateAdded(localDateTime); // might need updating?
 
-    Article savedArticle = articlesRepository.save(articles);
+    Article savedArticle = articleRepository.save(article);
 
     return savedArticle;
   }
