@@ -111,7 +111,7 @@ public class UCSBOrganizationsControllerTest extends ControllerTestCase {
             .orgCode("ZPR")
             .orgTranslationShort("ZETA PHI RHO")
             .orgTranslation("ZETA PHI RHO")
-            .inactive(false)
+            .inactive(true)
             .build();
 
     when(ucsbOrganizationRepository.save(eq(organization1))).thenReturn(organization1);
@@ -124,7 +124,7 @@ public class UCSBOrganizationsControllerTest extends ControllerTestCase {
                     .param("orgCode", "ZPR")
                     .param("orgTranslationShort", "ZETA PHI RHO")
                     .param("orgTranslation", "ZETA PHI RHO")
-                    .param("inactive", "false")
+                    .param("inactive", "true")
                     .with(csrf()))
             .andExpect(status().isOk())
             .andReturn();
