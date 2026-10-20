@@ -1,3 +1,26 @@
 {
-    "databaseChangeLog": []
+    "databaseChangeLog": [
+        {
+            "changeSet": {
+                "id": "",
+                "author": "",
+                "preconditions": [],
+                "changes": [
+                    {
+                        "createTable": {
+                            "columns": [
+                                {
+                                    "column": {}
+                                },
+                                {
+                                    "column": {}
+                                }
+                            ],
+                            "tableName": ""
+                        }
+                    }
+                ]
+            }
+        }
+    ]
 }
