@@ -2,21 +2,78 @@
     "databaseChangeLog": [
         {
             "changeSet": {
-                "id": "",
-                "author": "",
-                "preconditions": [],
+                "id": "HelpRequest-1",
+                "author": "csdiez_eng",
+                "preconditions": [
+                    {
+                        "onFail": "MARK_RAN"
+                    },
+                    {
+                        "not": [
+                            {
+                                "tableExists": {
+                                    "tableName": "HELPREQUEST"
+                                }
+                            }
+                        ]
+                    }
+                ],
                 "changes": [
                     {
                         "createTable": {
                             "columns": [
                                 {
-                                    "column": {}
+                                    "column": {
+                                        "autoIncrement": true,
+                                        "constraints": {
+                                            "primaryKey": true,
+                                            "primaryKeyName": "HELPREQUEST_PK"
+                                        },
+                                        "name": "ID",
+                                        "type": "BIGINT"
+                                    }
                                 },
                                 {
-                                    "column": {}
+                                    "column": {
+                                        "name": "REQUESTER_EMAIL",
+                                        "type": "VARCHAR(255)"
+                                    }
+                                },
+                                {
+                                    "column": {
+                                        "name": "TEAM_ID",
+                                        "type": "VARCHAR(255)"
+                                    }
+                                },
+                                {
+                                    "column": {
+                                        "name": "TABLE_OR_BREAKOUT_ROOM",
+                                        "type": "VARCHAR(255)"
+                                    }
+                                },
+                                {
+                                    "column": {
+                                        "name": "REQUEST_TIME",
+                                        "type": "TIMESTAMP"
+                                    }
+                                },
+                                {
+                                    "column": {
+                                        "name": "EXPLANATION",
+                                        "type": "VARCHAR(255)"
+                                    }
+                                },
+                                {
+                                    "column": {
+                                        "constraints": {
+                                            "nullable": false
+                                        },
+                                        "name": "SOLVED",
+                                        "type": "BOOLEAN"
+                                    }
                                 }
                             ],
-                            "tableName": ""
+                            "tableName": "HELPREQUEST"
                         }
                     }
                 ]
