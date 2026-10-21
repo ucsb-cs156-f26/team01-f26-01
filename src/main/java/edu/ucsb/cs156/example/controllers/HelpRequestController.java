@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "HelpRequest")
-@RequestMapping("/api/HelpRequest")
+@RequestMapping("/api/helprequest")
 @RestController
 @Slf4j
 public class HelpRequestController extends ApiController {
