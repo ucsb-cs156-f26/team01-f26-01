@@ -7,6 +7,7 @@ import edu.ucsb.cs156.example.repositories.ArticleRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,41 +31,7 @@ public class ArticleController extends ApiController {
   // also auto-switch between localhost and production environment
   @Autowired ArticleRepository articleRepository;
 
-  // copy over all with:
-  // @GetMapping(/all)
-  // @PostMapping(/post)
-
-  /**
-   * List all article
-   *
-   * @return an iterable of Article
-   */
-  @Operation(summary = "List all article")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  @GetMapping("/all")
-  public Iterable<Article> allArticles() {
-    Iterable<Article> articles = articleRepository.findAll();
-    return articles;
-  }
-
-  /**
-   * Get a single date by id
-   *
-   * @param id the id of the date
-   * @return an article
-   */
-  @Operation(summary = "Get a single article by id")
-  @PreAuthorize("hasRole('ROLE_USER')")
-  @GetMapping("")
-  public Article getById(@Parameter(name = "id") @RequestParam Long id) {
-    Article article =
-        articleRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException(Article.class, id));
-
-    return article;
-  }
-
+  // #region Create
   @Operation(summary = "Create a new article")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
   @PostMapping("/post")
@@ -97,4 +66,74 @@ public class ArticleController extends ApiController {
 
     return savedArticle;
   }
+
+  // #endregion
+
+  // #region Read
+  /**
+   * List all article
+   *
+   * @return an iterable of Article
+   */
+  @Operation(summary = "List all article")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  @GetMapping("/all")
+  public Iterable<Article> allArticles() {
+    Iterable<Article> articles = articleRepository.findAll();
+    return articles;
+  }
+
+  /**
+   * Get a single date by id
+   *
+   * @param id the id of the date
+   * @return an article
+   */
+  @Operation(summary = "Get a single article by id")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  @GetMapping("")
+  public Article getById(@Parameter(name = "id") @RequestParam Long id) {
+    Article article =
+        articleRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(Article.class, id));
+
+    return article;
+  }
+
+  // #endregion
+
+  // #region Update
+  /**
+   * Update a single date
+   *
+   * @param id id of the article to update
+   * @param incoming the new article
+   * @return the updated date object
+   */
+  @Operation(summary = "Update a single article")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PutMapping("")
+  public Article updateArticle(
+      @Parameter(name = "id") @RequestParam Long id, @RequestBody @Valid Article incoming) {
+
+    Article article =
+        articleRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(Article.class, id));
+
+    article.setTitle(incoming.getTitle());
+    article.setUrl(incoming.getUrl());
+    article.setExplanation(incoming.getExplanation());
+    article.setEmail(incoming.getEmail());
+    article.setDateAdded(incoming.getDateAdded());
+
+    articleRepository.save(article);
+
+    return article;
+  }
+  // #endregion
+
+  // #region Delete
+  // #endregion
 }
