@@ -175,4 +175,38 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
 
     assertEquals("RecommendationRequest with id 123 not found", json.get("message"));
   }
+
+  @Test
+  public void logged_out_users_cannot_delete() throws Exception {
+    mockMvc
+        .perform(delete("/api/RecommendationRequest").param("id", "1").with(csrf()))
+        .andExpect(status().isForbidden());
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_can_delete() throws Exception {
+    RecommendationRequest request = sampleRequest();
+    request.setId(1L);
+
+    when(recommendationRequestRepository.findById(1L)).thenReturn(Optional.of(request));
+
+    mockMvc
+        .perform(delete("/api/RecommendationRequest").param("id", "1").with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message").value("RecommendationRequest with id 1 deleted"));
+
+    verify(recommendationRequestRepository, times(1)).delete(eq(request));
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void delete_returns_404_when_not_found() throws Exception {
+    when(recommendationRequestRepository.findById(999L)).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(delete("/api/RecommendationRequest").param("id", "999").with(csrf()))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("RecommendationRequest with id 999 not found"));
+  }
 }
