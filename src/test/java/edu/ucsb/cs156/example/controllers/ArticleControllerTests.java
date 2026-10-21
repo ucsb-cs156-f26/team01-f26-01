@@ -1,6 +1,7 @@
 package edu.ucsb.cs156.example.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -355,6 +356,72 @@ public class ArticleControllerTests extends ControllerTestCase {
     Map<String, Object> json = responseToJson(response);
     assertEquals("Article with id 121 not found", json.get("message"));
   }
+
   // #endregion
+  // #endregion
+
+  // #region Delete
+  /*
+   *
+   *
+   *
+   * Filler space to keep the minimap legible
+   *
+   *
+   */
+  // #region DELETE by id
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_can_delete_an_article() throws Exception {
+    // arrange
+
+    LocalDateTime ldt1 = LocalDateTime.parse("2026-09-29T02:00:00");
+
+    Article article1 =
+        Article.builder()
+            .title("City Never Sleeps")
+            .url("https://www.playdeadlock.com/cityneversleeps")
+            .explanation("The biggest update the game's map has ever seen! And more!")
+            .email("gaben@valvesoftware.com")
+            .dateAdded(ldt1)
+            .build();
+
+    when(articleRepository.findById(eq(1337L))).thenReturn(Optional.of(article1));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/article").param("id", "1337").with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(articleRepository, times(1)).findById(1337L);
+    verify(articleRepository, times(1)).delete(any());
+
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("Article with id 1337 deleted", json.get("message"));
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_tries_to_delete_non_existant_article_and_gets_right_error_message()
+      throws Exception {
+    // arrange
+
+    when(articleRepository.findById(eq(1337L))).thenReturn(Optional.empty());
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/article").param("id", "1337").with(csrf()))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    // assert
+    verify(articleRepository, times(1)).findById(1337L);
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("Article with id 1337 not found", json.get("message"));
+  }
   // #endregion
 }
