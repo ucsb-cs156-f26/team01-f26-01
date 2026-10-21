@@ -17,6 +17,8 @@ import edu.ucsb.cs156.example.testconfig.TestConfig;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -43,6 +45,8 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
         .build();
   }
 
+  // GET ALL
+
   @Test
   public void logged_out_users_cannot_get_all() throws Exception {
     mockMvc.perform(get("/api/RecommendationRequest/all")).andExpect(status().isForbidden());
@@ -65,6 +69,8 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
 
     assertEquals(mapper.writeValueAsString(requests), result.getResponse().getContentAsString());
   }
+
+  // POST
 
   @Test
   public void logged_out_users_cannot_post() throws Exception {
@@ -122,5 +128,51 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
     verify(recommendationRequestRepository, times(1)).save(eq(request));
 
     assertEquals(mapper.writeValueAsString(request), result.getResponse().getContentAsString());
+  }
+
+  // GET BY ID
+
+  @Test
+  public void logged_out_users_cannot_get_by_id() throws Exception {
+    mockMvc
+        .perform(get("/api/RecommendationRequest").param("id", "7"))
+        .andExpect(status().isForbidden());
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_user_can_get_by_id() throws Exception {
+    RecommendationRequest request = sampleRequest();
+    request.setId(7L);
+
+    when(recommendationRequestRepository.findById(7L)).thenReturn(Optional.of(request));
+
+    MvcResult result =
+        mockMvc
+            .perform(get("/api/RecommendationRequest").param("id", "7"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    verify(recommendationRequestRepository, times(1)).findById(7L);
+
+    assertEquals(mapper.writeValueAsString(request), result.getResponse().getContentAsString());
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void logged_in_user_cannot_get_missing_id() throws Exception {
+    when(recommendationRequestRepository.findById(123L)).thenReturn(Optional.empty());
+
+    MvcResult result =
+        mockMvc
+            .perform(get("/api/RecommendationRequest").param("id", "123"))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    verify(recommendationRequestRepository, times(1)).findById(123L);
+
+    Map<String, Object> json = responseToJson(result);
+
+    assertEquals("RecommendationRequest with id 123 not found", json.get("message"));
   }
 }
