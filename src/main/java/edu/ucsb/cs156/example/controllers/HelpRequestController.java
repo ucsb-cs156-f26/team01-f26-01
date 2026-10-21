@@ -13,7 +13,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/HelpRequest")
 @RestController
 @Slf4j
-public class HelpRequestController {
+public class HelpRequestController extends ApiController {
 
   @Autowired HelpRequestRepository helprequestsrepository;
 
@@ -56,8 +55,8 @@ public class HelpRequestController {
   public HelpRequest postHelpRequest(
       @Parameter(name = "requesterEmail") @RequestParam String requesterEmail,
       @Parameter(name = "teamId") @RequestParam String teamId,
-      @Parameter(name = "tableOrBreakoutRoom") @RequestBody String tableOrBreakoutRoom,
-      @Parameter(name = "explanation") @RequestBody String explanation,
+      @Parameter(name = "tableOrBreakoutRoom") @RequestParam String tableOrBreakoutRoom,
+      @Parameter(name = "explanation") @RequestParam String explanation,
       @Parameter(name = "name") @RequestParam String name,
       @Parameter(name = "solved") @RequestParam boolean solved,
       @Parameter(
