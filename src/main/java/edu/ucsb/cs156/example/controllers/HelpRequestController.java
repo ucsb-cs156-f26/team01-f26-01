@@ -35,8 +35,7 @@ public class HelpRequestController extends ApiController {
   @PreAuthorize("hasRole('ROLE_USER')")
   @GetMapping("/all")
   public Iterable<HelpRequest> allHelpRequests() {
-    Iterable<HelpRequest> helpRequests = helprequestsrepository.findAll();
-    return helpRequests;
+    return helprequestsrepository.findAll();
   }
 
   /**
@@ -58,7 +57,6 @@ public class HelpRequestController extends ApiController {
       @Parameter(name = "teamId") @RequestParam String teamId,
       @Parameter(name = "tableOrBreakoutRoom") @RequestParam String tableOrBreakoutRoom,
       @Parameter(name = "explanation") @RequestParam String explanation,
-      @Parameter(name = "name") @RequestParam String name,
       @Parameter(name = "solved") @RequestParam boolean solved,
       @Parameter(
               name = "requestTime",
