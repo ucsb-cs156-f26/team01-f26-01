@@ -6,6 +6,7 @@ import edu.ucsb.cs156.example.repositories.HelpRequestRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +83,19 @@ public class HelpRequestController extends ApiController {
     helpRequest.setSolved(solved);
 
     return helprequestsrepository.save(helpRequest);
+  }
+
+  /**
+   * @param id the id of the help request
+   * @return a HelpRequest
+   */
+  @Operation(summary = "Get a single help request")
+  @PreAuthorize("hasRole('ROLE_USER')")
+  @GetMapping("")
+  public HelpRequest getById(@Parameter(name = "id") @RequestParam Long id) {
+    HelpRequest helpRequest =
+        helprequestsrepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+
+    return helpRequest;
   }
 }
