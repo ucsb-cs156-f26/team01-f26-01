@@ -17,6 +17,7 @@ import edu.ucsb.cs156.example.testconfig.TestConfig;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -141,5 +142,57 @@ public class MenuItemReviewControllerTests extends ControllerTestCase {
     String actualJson = response.getResponse().getContentAsString();
 
     assertEquals(expectedJson, actualJson);
+  }
+
+  // GET by ID tests - Issue #28
+
+  @Test
+  public void loggedOutUsersCannotGetById() throws Exception {
+    mockMvc.perform(get("/api/MenuItemReview").param("id", "1")).andExpect(status().isForbidden());
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void loggedInUsersCanGetById() throws Exception {
+    LocalDateTime dateReviewed = LocalDateTime.parse("2026-10-20T18:00:00");
+
+    MenuItemReview review =
+        MenuItemReview.builder()
+            .id(1L)
+            .itemId(1L)
+            .reviewerEmail("nathanshih@ucsb.edu")
+            .stars(5)
+            .dateReviewed(dateReviewed)
+            .comments("Great food")
+            .build();
+
+    when(menuItemReviewRepository.findById(eq(1L))).thenReturn(Optional.of(review));
+
+    MvcResult response =
+        mockMvc
+            .perform(get("/api/MenuItemReview").param("id", "1"))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    verify(menuItemReviewRepository, times(1)).findById(eq(1L));
+
+    String expectedJson = mapper.writeValueAsString(review);
+    String actualJson = response.getResponse().getContentAsString();
+
+    assertEquals(expectedJson, actualJson);
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void getByIdReturns404WhenNotFound() throws Exception {
+    when(menuItemReviewRepository.findById(eq(999L))).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(get("/api/MenuItemReview").param("id", "999"))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.type").value("EntityNotFoundException"))
+        .andExpect(jsonPath("$.message").value("MenuItemReview with id 999 not found"));
+
+    verify(menuItemReviewRepository, times(1)).findById(eq(999L));
   }
 }
