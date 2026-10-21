@@ -2,11 +2,11 @@ package edu.ucsb.cs156.example.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import edu.ucsb.cs156.example.entities.HelpRequest;
+import edu.ucsb.cs156.example.errors.EntityNotFoundException;
 import edu.ucsb.cs156.example.repositories.HelpRequestRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +94,9 @@ public class HelpRequestController extends ApiController {
   @GetMapping("")
   public HelpRequest getById(@Parameter(name = "id") @RequestParam Long id) {
     HelpRequest helpRequest =
-        helprequestsrepository.findById(id).orElseThrow(() -> new EntityNotFoundException());
+        helprequestsrepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(HelpRequest.class, id));
 
     return helpRequest;
   }
