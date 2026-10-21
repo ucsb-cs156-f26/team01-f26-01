@@ -10,13 +10,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import edu.ucsb.cs156.example.ControllerTestCase;
-import edu.ucsb.cs156.example.entities.Articles;
-import edu.ucsb.cs156.example.repositories.ArticlesRepository;
+import edu.ucsb.cs156.example.entities.Article;
+import edu.ucsb.cs156.example.repositories.ArticleRepository;
 import edu.ucsb.cs156.example.repositories.UserRepository;
 import edu.ucsb.cs156.example.testconfig.TestConfig;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
@@ -24,10 +26,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MvcResult;
 
-@WebMvcTest(controllers = ArticlesController.class)
+@WebMvcTest(controllers = ArticleController.class)
 @Import(TestConfig.class)
-public class ArticlesControllerTests extends ControllerTestCase {
-  @MockitoBean ArticlesRepository articlesRepository;
+public class ArticleControllerTests extends ControllerTestCase {
+  @MockitoBean ArticleRepository articleRepository;
 
   @MockitoBean UserRepository userRepository;
 
@@ -35,14 +37,14 @@ public class ArticlesControllerTests extends ControllerTestCase {
   @Test
   public void logged_out_users_cannot_get_all() throws Exception {
     mockMvc
-        .perform(get("/api/articles/all"))
+        .perform(get("/api/article/all"))
         .andExpect(status().is(403)); // logged out users can't get all
   }
 
   @WithMockUser(roles = {"USER"})
   @Test
   public void logged_in_users_can_get_all() throws Exception {
-    mockMvc.perform(get("/api/articles/all")).andExpect(status().is(200)); // logged
+    mockMvc.perform(get("/api/article/all")).andExpect(status().is(200)); // logged
   }
 
   @WithMockUser(roles = {"USER"})
@@ -52,8 +54,8 @@ public class ArticlesControllerTests extends ControllerTestCase {
     // arrange
     LocalDateTime ldt1 = LocalDateTime.parse("2026-09-29T02:00:00");
 
-    Articles article1 =
-        Articles.builder()
+    Article article1 =
+        Article.builder()
             .title("City Never Sleeps")
             .url("https://www.playdeadlock.com/cityneversleeps")
             .explanation("The biggest update the game's map has ever seen! And more!")
@@ -63,8 +65,8 @@ public class ArticlesControllerTests extends ControllerTestCase {
 
     LocalDateTime ldt2 = LocalDateTime.parse("2026-10-13T02:03:00");
 
-    Articles article2 =
-        Articles.builder()
+    Article article2 =
+        Article.builder()
             .title("Deadman Danny latest hero added to Valve's deadlock")
             .url("https://store.steampowered.com/news/app/1422450/view/703281660030880788")
             .explanation("The latest and greatest hero from Valve")
@@ -72,21 +74,90 @@ public class ArticlesControllerTests extends ControllerTestCase {
             .dateAdded(ldt2)
             .build();
 
-    ArrayList<Articles> expectedArticles = new ArrayList<>();
+    ArrayList<Article> expectedArticles = new ArrayList<>();
     expectedArticles.addAll(Arrays.asList(article1, article2));
 
-    when(articlesRepository.findAll()).thenReturn(expectedArticles);
+    when(articleRepository.findAll()).thenReturn(expectedArticles);
 
     // act
     MvcResult response =
-        mockMvc.perform(get("/api/articles/all")).andExpect(status().isOk()).andReturn();
+        mockMvc.perform(get("/api/article/all")).andExpect(status().isOk()).andReturn();
 
     // assert
 
-    verify(articlesRepository, times(1)).findAll();
+    verify(articleRepository, times(1)).findAll();
     String expectedJson = mapper.writeValueAsString(expectedArticles);
     String responseString = response.getResponse().getContentAsString();
     assertEquals(expectedJson, responseString);
+  }
+
+  // #endregion
+
+  // #region GET by id
+  @Test
+  public void logged_out_users_cannot_get_by_id() throws Exception {
+    mockMvc
+        .perform(get("/api/article").param("id", "1"))
+        .andExpect(status().is(403)); // logged out users can't get by id
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_that_logged_in_user_can_get_by_id_when_the_id_exists() throws Exception {
+
+    // arrange
+    LocalDateTime ldt = LocalDateTime.parse("2026-09-29T02:00:00");
+
+    Article article =
+        Article.builder()
+            .title("City Never Sleeps")
+            .url("https://www.playdeadlock.com/cityneversleeps")
+            .explanation("The biggest update the game's map has ever seen! And more!")
+            .email("gaben@valvesoftware.com")
+            .dateAdded(ldt)
+            .build();
+
+    final long TESTED_ID = 1;
+    final String ID_STR = String.valueOf(TESTED_ID);
+    when(articleRepository.findById(eq(TESTED_ID))).thenReturn(Optional.of(article));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(get("/api/article").param("id", ID_STR))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    assert (ID_STR.equals("" + TESTED_ID));
+    verify(articleRepository, times(1)).findById(eq(TESTED_ID));
+    String expectedJson = mapper.writeValueAsString(article);
+    String responseString = response.getResponse().getContentAsString();
+    assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void test_that_logged_in_user_can_get_by_id_when_the_id_does_not_exist() throws Exception {
+
+    // arrange
+    final long TESTED_ID = 1337;
+    final String ID_STR = String.valueOf(TESTED_ID);
+    when(articleRepository.findById(eq(TESTED_ID))).thenReturn(Optional.empty());
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(get("/api/article").param("id", ID_STR))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    // assert
+    assert (ID_STR.equals("" + TESTED_ID));
+    verify(articleRepository, times(1)).findById(eq(TESTED_ID));
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("EntityNotFoundException", json.get("type"));
+    assertEquals("Article with id " + ID_STR + " not found", json.get("message"));
   }
 
   // #endregion
@@ -96,7 +167,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
   public void logged_out_users_cannot_post() throws Exception {
     mockMvc
         .perform(
-            post("/api/articles/post")
+            post("/api/article/post")
                 .param("title", "City Never Sleeps")
                 .param("url", "https://www.playdeadlock.com/cityneversleeps")
                 .param("explanation", "The biggest update the game's map has ever seen! And more!")
@@ -111,7 +182,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
   public void logged_in_regular_users_cannot_post() throws Exception {
     mockMvc
         .perform(
-            post("/api/articles/post")
+            post("/api/article/post")
                 .param("title", "City Never Sleeps")
                 .param("url", "https://www.playdeadlock.com/cityneversleeps")
                 .param("explanation", "The biggest update the game's map has ever seen! And more!")
@@ -129,8 +200,8 @@ public class ArticlesControllerTests extends ControllerTestCase {
     String localTimeOfArticle = "2026-09-29T02:00:00";
     LocalDateTime ldt1 = LocalDateTime.parse(localTimeOfArticle);
 
-    Articles article1 =
-        Articles.builder()
+    Article article1 =
+        Article.builder()
             .title("City Never Sleeps")
             .url("https://www.playdeadlock.com/cityneversleeps")
             .explanation("The biggest update the game's map has ever seen! And more!")
@@ -138,13 +209,13 @@ public class ArticlesControllerTests extends ControllerTestCase {
             .dateAdded(ldt1)
             .build();
 
-    when(articlesRepository.save(eq(article1))).thenReturn(article1);
+    when(articleRepository.save(eq(article1))).thenReturn(article1);
 
     // act
     MvcResult response =
         mockMvc
             .perform(
-                post("/api/articles/post")
+                post("/api/article/post")
                     .param("title", "City Never Sleeps")
                     .param("url", "https://www.playdeadlock.com/cityneversleeps")
                     .param(
@@ -156,7 +227,7 @@ public class ArticlesControllerTests extends ControllerTestCase {
             .andReturn();
 
     // assert
-    verify(articlesRepository, times(1)).save(article1);
+    verify(articleRepository, times(1)).save(article1);
     String expectedJson = mapper.writeValueAsString(article1);
     String responseString = response.getResponse().getContentAsString();
     assertEquals(expectedJson, responseString);

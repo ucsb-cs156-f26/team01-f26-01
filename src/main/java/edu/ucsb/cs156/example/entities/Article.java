@@ -29,7 +29,7 @@ UCSBDiningCommons commons = UCSBDiningCommons.builder()
 // This will be a row in a database table
 // name = "nameoftable" <-- all lowercase, no hyphens/underscores
 @Entity(name = "articles")
-public class Articles {
+public class Article {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
