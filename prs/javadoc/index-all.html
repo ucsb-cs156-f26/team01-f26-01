@@ -54,9 +54,9 @@ loadScripts(document, 'script');</script>
 <dl class="index">
 <dt><a href="edu/ucsb/cs156/example/services/jobs/JobContextConsumer.html#accept(edu.ucsb.cs156.example.services.jobs.JobContext)" class="member-name-link">accept(JobContext)</a> - Method in interface edu.ucsb.cs156.example.services.jobs.<a href="edu/ucsb/cs156/example/services/jobs/JobContextConsumer.html" title="interface in edu.ucsb.cs156.example.services.jobs">JobContextConsumer</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="edu/ucsb/cs156/example/controllers/ArticlesController.html#allArticles()" class="member-name-link">allArticles()</a> - Method in class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/ArticlesController.html" title="class in edu.ucsb.cs156.example.controllers">ArticlesController</a></dt>
+<dt><a href="edu/ucsb/cs156/example/controllers/ArticleController.html#allArticles()" class="member-name-link">allArticles()</a> - Method in class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/ArticleController.html" title="class in edu.ucsb.cs156.example.controllers">ArticleController</a></dt>
 <dd>
-<div class="block">List all articles</div>
+<div class="block">List all article</div>
 </dd>
 <dt><a href="edu/ucsb/cs156/example/controllers/UCSBDiningCommonsController.html#allCommonss()" class="member-name-link">allCommonss()</a> - Method in class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/UCSBDiningCommonsController.html" title="class in edu.ucsb.cs156.example.controllers">UCSBDiningCommonsController</a></dt>
 <dd>
@@ -82,15 +82,15 @@ loadScripts(document, 'script');</script>
 </dd>
 <dt><a href="edu/ucsb/cs156/example/controllers/ApiController.html#%3Cinit%3E()" class="member-name-link">ApiController()</a> - Constructor for class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/ApiController.html" title="class in edu.ucsb.cs156.example.controllers">ApiController</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="edu/ucsb/cs156/example/entities/Articles.html" class="type-name-link" title="class in edu.ucsb.cs156.example.entities">Articles</a> - Class in <a href="edu/ucsb/cs156/example/entities/package-summary.html">edu.ucsb.cs156.example.entities</a></dt>
+<dt><a href="edu/ucsb/cs156/example/entities/Article.html" class="type-name-link" title="class in edu.ucsb.cs156.example.entities">Article</a> - Class in <a href="edu/ucsb/cs156/example/entities/package-summary.html">edu.ucsb.cs156.example.entities</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="edu/ucsb/cs156/example/entities/Articles.html#%3Cinit%3E()" class="member-name-link">Articles()</a> - Constructor for class edu.ucsb.cs156.example.entities.<a href="edu/ucsb/cs156/example/entities/Articles.html" title="class in edu.ucsb.cs156.example.entities">Articles</a></dt>
+<dt><a href="edu/ucsb/cs156/example/entities/Article.html#%3Cinit%3E()" class="member-name-link">Article()</a> - Constructor for class edu.ucsb.cs156.example.entities.<a href="edu/ucsb/cs156/example/entities/Article.html" title="class in edu.ucsb.cs156.example.entities">Article</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="edu/ucsb/cs156/example/controllers/ArticlesController.html" class="type-name-link" title="class in edu.ucsb.cs156.example.controllers">ArticlesController</a> - Class in <a href="edu/ucsb/cs156/example/controllers/package-summary.html">edu.ucsb.cs156.example.controllers</a></dt>
+<dt><a href="edu/ucsb/cs156/example/controllers/ArticleController.html" class="type-name-link" title="class in edu.ucsb.cs156.example.controllers">ArticleController</a> - Class in <a href="edu/ucsb/cs156/example/controllers/package-summary.html">edu.ucsb.cs156.example.controllers</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="edu/ucsb/cs156/example/controllers/ArticlesController.html#%3Cinit%3E()" class="member-name-link">ArticlesController()</a> - Constructor for class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/ArticlesController.html" title="class in edu.ucsb.cs156.example.controllers">ArticlesController</a></dt>
+<dt><a href="edu/ucsb/cs156/example/controllers/ArticleController.html#%3Cinit%3E()" class="member-name-link">ArticleController()</a> - Constructor for class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/ArticleController.html" title="class in edu.ucsb.cs156.example.controllers">ArticleController</a></dt>
 <dd>&nbsp;</dd>
-<dt><a href="edu/ucsb/cs156/example/repositories/ArticlesRepository.html" class="type-name-link" title="interface in edu.ucsb.cs156.example.repositories">ArticlesRepository</a> - Interface in <a href="edu/ucsb/cs156/example/repositories/package-summary.html">edu.ucsb.cs156.example.repositories</a></dt>
+<dt><a href="edu/ucsb/cs156/example/repositories/ArticleRepository.html" class="type-name-link" title="interface in edu.ucsb.cs156.example.repositories">ArticleRepository</a> - Interface in <a href="edu/ucsb/cs156/example/repositories/package-summary.html">edu.ucsb.cs156.example.repositories</a></dt>
 <dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:C">C</h2>
@@ -232,6 +232,10 @@ behavior.</div>
 <dd>
 <div class="block">This method checks if the given email belongs to an admin user either from a predefined list or
 by querying the user repository.</div>
+</dd>
+<dt><a href="edu/ucsb/cs156/example/controllers/ArticleController.html#getById(java.lang.Long)" class="member-name-link">getById(Long)</a> - Method in class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/ArticleController.html" title="class in edu.ucsb.cs156.example.controllers">ArticleController</a></dt>
+<dd>
+<div class="block">Get a single date by id</div>
 </dd>
 <dt><a href="edu/ucsb/cs156/example/controllers/RestaurantsController.html#getById(java.lang.Long)" class="member-name-link">getById(Long)</a> - Method in class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/RestaurantsController.html" title="class in edu.ucsb.cs156.example.controllers">RestaurantsController</a></dt>
 <dd>
@@ -430,6 +434,12 @@ authentication.</div>
 <dd>
 <div class="block">The main method is the entry point for the application.</div>
 </dd>
+<dt><a href="edu/ucsb/cs156/example/entities/MenuItemReview.html" class="type-name-link" title="class in edu.ucsb.cs156.example.entities">MenuItemReview</a> - Class in <a href="edu/ucsb/cs156/example/entities/package-summary.html">edu.ucsb.cs156.example.entities</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="edu/ucsb/cs156/example/entities/MenuItemReview.html#%3Cinit%3E()" class="member-name-link">MenuItemReview()</a> - Constructor for class edu.ucsb.cs156.example.entities.<a href="edu/ucsb/cs156/example/entities/MenuItemReview.html" title="class in edu.ucsb.cs156.example.entities">MenuItemReview</a></dt>
+<dd>&nbsp;</dd>
+<dt><a href="edu/ucsb/cs156/example/repositories/MenuItemReviewRepository.html" class="type-name-link" title="interface in edu.ucsb.cs156.example.repositories">MenuItemReviewRepository</a> - Interface in <a href="edu/ucsb/cs156/example/repositories/package-summary.html">edu.ucsb.cs156.example.repositories</a></dt>
+<dd>&nbsp;</dd>
 </dl>
 <h2 class="title" id="I:P">P</h2>
 <dl class="index">
@@ -437,7 +447,7 @@ authentication.</div>
 <dd>
 <div class="block">See: https://www.baeldung.com/spring-git-information</div>
 </dd>
-<dt><a href="edu/ucsb/cs156/example/controllers/ArticlesController.html#postArticles(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.time.LocalDateTime)" class="member-name-link">postArticles(String, String, String, String, LocalDateTime)</a> - Method in class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/ArticlesController.html" title="class in edu.ucsb.cs156.example.controllers">ArticlesController</a></dt>
+<dt><a href="edu/ucsb/cs156/example/controllers/ArticleController.html#postArticles(java.lang.String,java.lang.String,java.lang.String,java.lang.String,java.time.LocalDateTime)" class="member-name-link">postArticles(String, String, String, String, LocalDateTime)</a> - Method in class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/ArticleController.html" title="class in edu.ucsb.cs156.example.controllers">ArticleController</a></dt>
 <dd>&nbsp;</dd>
 <dt><a href="edu/ucsb/cs156/example/controllers/UCSBDiningCommonsController.html#postCommons(java.lang.String,java.lang.String,boolean,boolean,boolean,double,double)" class="member-name-link">postCommons(String, String, boolean, boolean, boolean, double, double)</a> - Method in class edu.ucsb.cs156.example.controllers.<a href="edu/ucsb/cs156/example/controllers/UCSBDiningCommonsController.html" title="class in edu.ucsb.cs156.example.controllers">UCSBDiningCommonsController</a></dt>
 <dd>
