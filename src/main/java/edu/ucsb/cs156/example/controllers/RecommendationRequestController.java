@@ -14,6 +14,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -87,5 +89,27 @@ public class RecommendationRequestController extends ApiController {
     recommendationRequestRepository.delete(request);
 
     return genericMessage("RecommendationRequest with id %s deleted".formatted(id));
+  }
+
+  @Operation(summary = "Update a recommendation request by ID")
+  @PreAuthorize("hasRole('ROLE_ADMIN')")
+  @PutMapping("")
+  public RecommendationRequest updateRecommendationRequest(
+      @Parameter(description = "ID of the recommendation request") @RequestParam long id,
+      @RequestBody RecommendationRequest incoming) {
+
+    RecommendationRequest request =
+        recommendationRequestRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException(RecommendationRequest.class, id));
+
+    request.setRequesterEmail(incoming.getRequesterEmail());
+    request.setProfessorEmail(incoming.getProfessorEmail());
+    request.setExplanation(incoming.getExplanation());
+    request.setDateRequested(incoming.getDateRequested());
+    request.setDateNeeded(incoming.getDateNeeded());
+    request.setDone(incoming.getDone());
+
+    return recommendationRequestRepository.save(request);
   }
 }
