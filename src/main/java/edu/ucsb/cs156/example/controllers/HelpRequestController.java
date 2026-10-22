@@ -49,7 +49,7 @@ public class HelpRequestController extends ApiController {
    * @param tableOrBreakoutRoom physical or digital location to meet
    * @param requestTime time the request is sent in
    * @param explanation resolution to the request
-   * @param resolved has the request been handled
+   * @param solved has the request been handled
    */
   @Operation(summary = "Create a help request")
   @PreAuthorize("hasRole('ROLE_ADMIN')")
