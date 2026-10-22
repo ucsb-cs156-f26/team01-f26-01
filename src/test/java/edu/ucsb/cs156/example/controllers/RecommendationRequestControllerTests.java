@@ -209,4 +209,81 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("RecommendationRequest with id 999 not found"));
   }
+
+  // PUT
+  @Test
+  public void logged_out_users_cannot_put() throws Exception {
+    mockMvc
+        .perform(
+            put("/api/RecommendationRequest")
+                .param("id", "1")
+                .param("requesterEmail", "student@ucsb.edu")
+                .param("professorEmail", "professor@ucsb.edu")
+                .param("explanation", "Graduate school recommendation")
+                .param("dateRequested", "2026-10-20T12:00:00")
+                .param("dateNeeded", "2026-12-01T12:00:00")
+                .param("done", "false")
+                .with(csrf()))
+        .andExpect(status().isForbidden());
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_can_put() throws Exception {
+    RecommendationRequest request = sampleRequest();
+    request.setId(1L);
+
+    when(recommendationRequestRepository.findById(1L)).thenReturn(Optional.of(request));
+
+    RecommendationRequest updated = sampleRequest();
+    updated.setId(1L);
+    updated.setRequesterEmail("updated@ucsb.edu");
+    updated.setProfessorEmail("newprofessor@ucsb.edu");
+    updated.setExplanation("Updated recommendation");
+    updated.setDateRequested(LocalDateTime.parse("2026-10-21T12:00:00"));
+    updated.setDateNeeded(LocalDateTime.parse("2026-12-15T12:00:00"));
+    updated.setDone(true);
+
+    when(recommendationRequestRepository.save(eq(updated))).thenReturn(updated);
+
+    MvcResult result =
+        mockMvc
+            .perform(
+                put("/api/RecommendationRequest")
+                    .param("id", "1")
+                    .param("requesterEmail", "updated@ucsb.edu")
+                    .param("professorEmail", "newprofessor@ucsb.edu")
+                    .param("explanation", "Updated recommendation")
+                    .param("dateRequested", "2026-10-21T12:00:00")
+                    .param("dateNeeded", "2026-12-15T12:00:00")
+                    .param("done", "true")
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    verify(recommendationRequestRepository, times(1)).findById(1L);
+    verify(recommendationRequestRepository, times(1)).save(eq(updated));
+
+    assertEquals(mapper.writeValueAsString(updated), result.getResponse().getContentAsString());
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void put_returns_404_when_not_found() throws Exception {
+    when(recommendationRequestRepository.findById(999L)).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(
+            put("/api/RecommendationRequest")
+                .param("id", "999")
+                .param("requesterEmail", "updated@ucsb.edu")
+                .param("professorEmail", "newprofessor@ucsb.edu")
+                .param("explanation", "Updated recommendation")
+                .param("dateRequested", "2026-10-21T12:00:00")
+                .param("dateNeeded", "2026-12-15T12:00:00")
+                .param("done", "true")
+                .with(csrf()))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.message").value("RecommendationRequest with id 999 not found"));
+  }
 }
