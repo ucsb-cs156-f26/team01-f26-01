@@ -211,18 +211,15 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
   }
 
   // PUT
+
   @Test
   public void logged_out_users_cannot_put() throws Exception {
     mockMvc
         .perform(
             put("/api/RecommendationRequest")
                 .param("id", "1")
-                .param("requesterEmail", "student@ucsb.edu")
-                .param("professorEmail", "professor@ucsb.edu")
-                .param("explanation", "Graduate school recommendation")
-                .param("dateRequested", "2026-10-20T12:00:00")
-                .param("dateNeeded", "2026-12-01T12:00:00")
-                .param("done", "false")
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(sampleRequest()))
                 .with(csrf()))
         .andExpect(status().isForbidden());
   }
@@ -251,12 +248,8 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
             .perform(
                 put("/api/RecommendationRequest")
                     .param("id", "1")
-                    .param("requesterEmail", "updated@ucsb.edu")
-                    .param("professorEmail", "newprofessor@ucsb.edu")
-                    .param("explanation", "Updated recommendation")
-                    .param("dateRequested", "2026-10-21T12:00:00")
-                    .param("dateNeeded", "2026-12-15T12:00:00")
-                    .param("done", "true")
+                    .contentType("application/json")
+                    .content(mapper.writeValueAsString(updated))
                     .with(csrf()))
             .andExpect(status().isOk())
             .andReturn();
@@ -276,12 +269,8 @@ public class RecommendationRequestControllerTests extends ControllerTestCase {
         .perform(
             put("/api/RecommendationRequest")
                 .param("id", "999")
-                .param("requesterEmail", "updated@ucsb.edu")
-                .param("professorEmail", "newprofessor@ucsb.edu")
-                .param("explanation", "Updated recommendation")
-                .param("dateRequested", "2026-10-21T12:00:00")
-                .param("dateNeeded", "2026-12-15T12:00:00")
-                .param("done", "true")
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(sampleRequest()))
                 .with(csrf()))
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.message").value("RecommendationRequest with id 999 not found"));
