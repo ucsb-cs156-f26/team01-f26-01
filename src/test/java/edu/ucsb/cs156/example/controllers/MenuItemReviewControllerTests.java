@@ -195,4 +195,175 @@ public class MenuItemReviewControllerTests extends ControllerTestCase {
 
     verify(menuItemReviewRepository, times(1)).findById(eq(999L));
   }
+
+  // PUT tests - Issue #29
+
+  @Test
+  public void loggedOutUsersCannotPut() throws Exception {
+    mockMvc
+        .perform(
+            put("/api/MenuItemReview")
+                .param("id", "1")
+                .contentType("application/json")
+                .content("{}")
+                .with(csrf()))
+        .andExpect(status().isForbidden());
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void regularUsersCannotPut() throws Exception {
+    mockMvc
+        .perform(
+            put("/api/MenuItemReview")
+                .param("id", "1")
+                .contentType("application/json")
+                .content("{}")
+                .with(csrf()))
+        .andExpect(status().isForbidden());
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void adminCanUpdateReview() throws Exception {
+    LocalDateTime oldDate = LocalDateTime.parse("2026-10-20T18:00:00");
+    LocalDateTime newDate = LocalDateTime.parse("2026-10-21T12:00:00");
+
+    MenuItemReview existingReview =
+        MenuItemReview.builder()
+            .id(1L)
+            .itemId(1L)
+            .reviewerEmail("nathanshih@ucsb.edu")
+            .stars(5)
+            .dateReviewed(oldDate)
+            .comments("Great food")
+            .build();
+
+    MenuItemReview incomingReview =
+        MenuItemReview.builder()
+            .itemId(2L)
+            .reviewerEmail("updated@ucsb.edu")
+            .stars(4)
+            .dateReviewed(newDate)
+            .comments("Good food")
+            .build();
+
+    MenuItemReview expectedReview =
+        MenuItemReview.builder()
+            .id(1L)
+            .itemId(2L)
+            .reviewerEmail("updated@ucsb.edu")
+            .stars(4)
+            .dateReviewed(newDate)
+            .comments("Good food")
+            .build();
+
+    when(menuItemReviewRepository.findById(eq(1L))).thenReturn(Optional.of(existingReview));
+
+    MvcResult response =
+        mockMvc
+            .perform(
+                put("/api/MenuItemReview")
+                    .param("id", "1")
+                    .contentType("application/json")
+                    .content(mapper.writeValueAsString(incomingReview))
+                    .with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    verify(menuItemReviewRepository, times(1)).findById(eq(1L));
+    verify(menuItemReviewRepository, times(1)).save(eq(expectedReview));
+
+    String expectedJson = mapper.writeValueAsString(expectedReview);
+    String actualJson = response.getResponse().getContentAsString();
+
+    assertEquals(expectedJson, actualJson);
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void putReturns404WhenNotFound() throws Exception {
+    LocalDateTime dateReviewed = LocalDateTime.parse("2026-10-20T18:00:00");
+
+    MenuItemReview incomingReview =
+        MenuItemReview.builder()
+            .itemId(1L)
+            .reviewerEmail("nathanshih@ucsb.edu")
+            .stars(4)
+            .dateReviewed(dateReviewed)
+            .comments("Good food")
+            .build();
+
+    when(menuItemReviewRepository.findById(eq(999L))).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(
+            put("/api/MenuItemReview")
+                .param("id", "999")
+                .contentType("application/json")
+                .content(mapper.writeValueAsString(incomingReview))
+                .with(csrf()))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.type").value("EntityNotFoundException"))
+        .andExpect(jsonPath("$.message").value("MenuItemReview with id 999 not found"));
+
+    verify(menuItemReviewRepository, times(1)).findById(eq(999L));
+  }
+
+  // DELETE tests - Issue #30
+
+  @Test
+  public void loggedOutUsersCannotDelete() throws Exception {
+    mockMvc
+        .perform(delete("/api/MenuItemReview").param("id", "1").with(csrf()))
+        .andExpect(status().isForbidden());
+  }
+
+  @WithMockUser(roles = {"USER"})
+  @Test
+  public void regularUsersCannotDelete() throws Exception {
+    mockMvc
+        .perform(delete("/api/MenuItemReview").param("id", "1").with(csrf()))
+        .andExpect(status().isForbidden());
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void adminCanDeleteReview() throws Exception {
+    LocalDateTime dateReviewed = LocalDateTime.parse("2026-10-20T18:00:00");
+
+    MenuItemReview review =
+        MenuItemReview.builder()
+            .id(1L)
+            .itemId(1L)
+            .reviewerEmail("nathanshih@ucsb.edu")
+            .stars(5)
+            .dateReviewed(dateReviewed)
+            .comments("Great food")
+            .build();
+
+    when(menuItemReviewRepository.findById(eq(1L))).thenReturn(Optional.of(review));
+
+    mockMvc
+        .perform(delete("/api/MenuItemReview").param("id", "1").with(csrf()))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message").value("MenuItemReview with id 1 deleted"));
+
+    verify(menuItemReviewRepository, times(1)).findById(eq(1L));
+    verify(menuItemReviewRepository, times(1)).delete(eq(review));
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void deleteReturns404WhenNotFound() throws Exception {
+    when(menuItemReviewRepository.findById(eq(999L))).thenReturn(Optional.empty());
+
+    mockMvc
+        .perform(delete("/api/MenuItemReview").param("id", "999").with(csrf()))
+        .andExpect(status().isNotFound())
+        .andExpect(jsonPath("$.type").value("EntityNotFoundException"))
+        .andExpect(jsonPath("$.message").value("MenuItemReview with id 999 not found"));
+
+    verify(menuItemReviewRepository, times(1)).findById(eq(999L));
+  }
 }
