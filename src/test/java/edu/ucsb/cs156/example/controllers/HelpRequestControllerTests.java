@@ -1,6 +1,7 @@
 package edu.ucsb.cs156.example.controllers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -35,7 +36,7 @@ public class HelpRequestControllerTests extends ControllerTestCase {
 
   @MockitoBean UserRepository userRepository;
 
-  // Authorization tests for /api/ucsbdates/admin/all
+  // Authorization tests for /api/helprequest/admin/all
 
   @Test
   public void logged_out_users_cannot_get_all() throws Exception {
@@ -220,6 +221,60 @@ public class HelpRequestControllerTests extends ControllerTestCase {
     String expectedJson = mapper.writeValueAsString(helpRequest1);
     String responseString = response.getResponse().getContentAsString();
     assertEquals(expectedJson, responseString);
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_can_delete_a_helprequest() throws Exception {
+    // arrange
+
+    LocalDateTime ldt1 = LocalDateTime.parse("2022-01-03T00:00:00");
+
+    HelpRequest helpRequest1 =
+        HelpRequest.builder()
+            .requesterEmail("csdiez@ucsb.edu")
+            .teamId("20222")
+            .tableOrBreakoutRoom("table")
+            .requestTime(ldt1)
+            .explanation("none")
+            .solved(true)
+            .build();
+    when(helprequestrepository.findById(eq(15L))).thenReturn(Optional.of(helpRequest1));
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/helprequest").param("id", "15").with(csrf()))
+            .andExpect(status().isOk())
+            .andReturn();
+
+    // assert
+    verify(helprequestrepository, times(1)).findById(15L);
+    verify(helprequestrepository, times(1)).delete(any());
+
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("HelpRequest with id 15 deleted", json.get("message"));
+  }
+
+  @WithMockUser(roles = {"ADMIN", "USER"})
+  @Test
+  public void admin_tries_to_delete_non_existant_ucsbdate_and_gets_right_error_message()
+      throws Exception {
+    // arrange
+
+    when(helprequestrepository.findById(eq(15L))).thenReturn(Optional.empty());
+
+    // act
+    MvcResult response =
+        mockMvc
+            .perform(delete("/api/helprequest").param("id", "15").with(csrf()))
+            .andExpect(status().isNotFound())
+            .andReturn();
+
+    // assert
+    verify(helprequestrepository, times(1)).findById(15L);
+    Map<String, Object> json = responseToJson(response);
+    assertEquals("HelpRequest with id 15 not found", json.get("message"));
   }
 
   @WithMockUser(roles = {"ADMIN", "USER"})
